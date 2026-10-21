@@ -1,0 +1,36 @@
+name: Verify Corestrum
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: verify-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6
+        with:
+          bun-version: 1.4.1
+      - run: bun install --frozen-lockfile --ignore-scripts
+      - run: bun run guard
+      - run: bun run guard:public
+      - run: bun run check
+      - run: bun audit
+      - run: bun run build:production
+      - name: Check the customer Edge Function in Deno
+        run: bunx --bun deno@2.9.6 check --frozen --config bridge/supabase/functions/waypoint-bridge/deno.json bridge/supabase/functions/waypoint-bridge/index.ts
+      - name: Exercise real PostgreSQL privileges, RLS and replay handling
+        run: PG_BIN="$(pg_config --bindir)" bun run test:postgres
+      - name: Exercise licensing, payment events and customer boundaries
+        run: PG_BIN="$(pg_config --bindir)" bun run test:licensing
+      - name: Exercise isolated customer containers
+        run: bun run test:isolation

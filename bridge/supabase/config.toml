@@ -1,0 +1,6 @@
+project_id = "waypoint-customer-bridge"
+
+[functions.waypoint-bridge]
+# Requests carry our installation-bound asymmetric JWT, checked inside the handler.
+# This does NOT make the handler public: no request reaches SQL without verification.
+verify_jwt = false

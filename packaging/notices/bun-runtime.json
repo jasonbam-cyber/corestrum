@@ -1,0 +1,14 @@
+{
+  "version": "1.4.1",
+  "revision": "4661e494f052c83c80dade1318e5710238340be6",
+  "upstreamLicenseURL": "https://raw.githubusercontent.com/oven-sh/bun/4661e494f052c83c80dade1318e5710238340be6/LICENSE.md",
+  "upstreamLicenseFile": "BUN-1.4.1-UPSTREAM-LICENSE.md",
+  "upstreamLicenseSha256": "b9caf52728691b4057e371232c221a132883198be2f3d2ddf92c90404c984b1a",
+  "sourceURL": "https://github.com/oven-sh/bun/tree/4661e494f052c83c80dade1318e5710238340be6",
+  "runtimeRedistributionComplete": false,
+  "unresolved": [
+    "Exact native dependency license/source inventory",
+    "JavaScriptCore/WebKit and other applicable source and relinking materials",
+    "Reviewed distribution terms and delivery of required materials"
+  ]
+}

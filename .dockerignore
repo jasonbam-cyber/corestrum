@@ -1,0 +1,13 @@
+**
+!package.json
+!bun.lock
+!src
+!src/production
+!src/production/**
+!src/runtime
+!src/runtime/vault.ts
+!bridge
+!bridge/supabase
+!bridge/supabase/functions
+!bridge/supabase/functions/waypoint-bridge
+!bridge/supabase/functions/waypoint-bridge/handler.ts

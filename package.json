@@ -1,0 +1,53 @@
+{
+  "name": "corestrum",
+  "version": "0.2.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "bun run build:corestrum && bun run start:local",
+    "start": "bun run start:local",
+    "build": "vite build",
+    "typecheck": "tsc --noEmit",
+    "test": "bun test tests",
+    "check": "bun run typecheck && bun run test && bun run build && bun run build:corestrum && bun run build:local",
+    "guard": "bun scripts/guard.ts",
+    "build:production": "bun build --target=bun --outdir=dist-production src/production/server.ts src/production/worker.ts src/production/egress.ts",
+    "test:postgres": "bun scripts/test-postgres.ts",
+    "test:isolation": "bun scripts/test-isolation.ts",
+    "enroll": "bun scripts/enroll-member.ts",
+    "bridge:grant": "bun scripts/render-bridge-grant.ts",
+    "build:corestrum": "vite build --config vite.corestrum.config.ts",
+    "start:local": "bun --no-env-file src/corestrum/local/server.ts",
+    "build:local": "bun build --target=bun --outdir=dist-local src/corestrum/local/server.ts",
+    "package:macos": "bun --no-env-file scripts/package-macos.ts",
+    "test:licensing": "bun scripts/test-corestrum-postgres.ts",
+    "demo:synthetic": "PROTOTYPE_MODE=synthetic bun --no-env-file src/server.ts",
+    "guard:public": "bun --no-env-file scripts/public-guard.ts"
+  },
+  "dependencies": {
+    "@clerk/backend": "3.23.2",
+    "@clerk/react": "6.17.8",
+    "@fontsource-variable/inter": "5.3.0",
+    "jose": "6.2.12",
+    "lucide-react": "1.57.0",
+    "openid-client": "6.8.8",
+    "postgres": "3.4.9",
+    "react": "19.3.1",
+    "react-dom": "19.3.1",
+    "stripe": "23.0.0"
+  },
+  "devDependencies": {
+    "@types/bun": "1.4.3",
+    "@types/react": "19.3.0",
+    "@types/react-dom": "19.3.0",
+    "@vitejs/plugin-react": "6.1.2",
+    "typescript": "5.9.3",
+    "vite": "8.3.4"
+  },
+  "license": "Apache-2.0",
+  "description": "Free, local-first operations workspace for SaaS founders, with six AI roles, reviewable reports, paused routines and scoped Supabase access.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jasonbam-cyber/corestrum.git"
+  }
+}
