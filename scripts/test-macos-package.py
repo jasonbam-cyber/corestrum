@@ -154,6 +154,14 @@ try:
         for p in notice_manifest["packages"] for f in p["files"]))
     check("font and server dependency notices included", {"@fontsource-variable/inter", "jose"}.issubset({p["name"] for p in notice_manifest["packages"]}))
     check("Mac support matrix ships with app", (app / "Contents/Resources/MAC-SUPPORT.md").is_file())
+    check("setup guide survives copying the app", digest(app / "Contents/Resources/MAC-SETUP.md") == digest(root / "docs/MAC-SETUP.md"))
+    check("disk image includes exact setup guide", digest(mount / "Setup Instructions.md") == digest(root / "docs/MAC-SETUP.md"))
+    check("copied app retains project license and notices", all(
+        digest(app / "Contents/Resources" / name) == digest(root / name)
+        for name in ("LICENSE", "NOTICE", "THIRD_PARTY_NOTICES.md")))
+    check("disk image includes project license and notices", all(
+        digest(mount / name) == digest(root / name)
+        for name in ("LICENSE", "NOTICE", "THIRD_PARTY_NOTICES.md")))
     run(["/usr/bin/hdiutil", "detach", str(mount)])
     mounted = False
     cache = args.output / "swift-cache"
@@ -188,10 +196,17 @@ try:
     check("cross-origin unlock denied", request(oa, "/api/local/unlock", {}, ca, xa, {"Origin": "https://attacker.invalid"})[0] == 403)
     password = "fictional-package-" + os.urandom(24).hex()
     check("create private vault", request(oa, "/api/local/unlock", {"password": password}, ca, xa)[0] == 200)
+    community = request(oa, "/api/config")[1].get("edition") == "community"
     activation = request(oa, "/api/local/activation", {}, ca, xa)
-    check("activation request uses public device key only", activation[0] == 200 and "d" not in activation[1]["publicKey"])
-    device = activation[1]["device"]
-    check("activation does not fabricate entitlement", request(oa, "/api/local/state", cookie=ca)[1]["license"] is None)
+    if community:
+        check("community has no paid activation", activation[0] == 403 and activation[1]["error"] == "NOT_AVAILABLE_IN_COMMUNITY")
+        access = request(oa, "/api/local/state", cookie=ca)[1]["license"]
+        check("community unlock opens local workspace", access["edition"] == "community")
+        device = access["workspace"]
+    else:
+        check("activation request uses public device key only", activation[0] == 200 and "d" not in activation[1]["publicKey"])
+        device = activation[1]["device"]
+        check("activation does not fabricate entitlement", request(oa, "/api/local/state", cookie=ca)[1]["license"] is None)
     duplicate, rejected, _ = launch(a)
     check("concurrent same-workspace process denied", rejected.get("code") == "WORKSPACE_ALREADY_OPEN")
     check("denied duplicate preserves existing process", request(oa, "/api/local/state", cookie=ca)[1]["unlocked"] is True)
@@ -200,7 +215,9 @@ try:
     cb, xb = session(vb, ob)
     check("workspace A session denied in B", request(ob, "/api/local/state", cookie=ca)[0] == 401)
     check("second vault creates separately", request(ob, "/api/local/unlock", {"password": password + "-other"}, cb, xb)[0] == 200)
-    check("device identities are isolated", request(ob, "/api/local/activation", {}, cb, xb)[1]["device"] != device)
+    other_identity = (request(ob, "/api/local/state", cookie=cb)[1]["license"]["workspace"] if community
+                      else request(ob, "/api/local/activation", {}, cb, xb)[1]["device"])
+    check("workspace identities are isolated", other_identity != device)
     stop(pb, ob)
     stop(pa, oa)
     check("workspace and vault permissions private", a.stat().st_mode & 0o077 == 0 and (a / "vault.enc").stat().st_mode & 0o077 == 0)
@@ -210,7 +227,9 @@ try:
     state = request(oa, "/api/local/state", cookie=ca)[1]
     check("reopen preserves vault but starts locked", state["vaultExists"] and not state["unlocked"])
     check("reopen accepts original passphrase", request(oa, "/api/local/unlock", {"password": password}, ca, xa)[0] == 200)
-    check("reopen preserves device identity", request(oa, "/api/local/activation", {}, ca, xa)[1]["device"] == device)
+    reopened_identity = (request(oa, "/api/local/state", cookie=ca)[1]["license"]["workspace"] if community
+                         else request(oa, "/api/local/activation", {}, ca, xa)[1]["device"])
+    check("reopen preserves workspace identity", reopened_identity == device)
     pa.kill()
     pa.wait(timeout=5)
     check("GUI crash closes child listener through EOF", closed(oa))

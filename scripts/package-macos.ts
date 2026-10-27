@@ -69,6 +69,12 @@ const noticeEvidence = writeDesktopNotices(root, join(resources, "Dependency Lic
 }, Bun.version, run([process.execPath, "--revision"]));
 writeFileSync(join(resources, "RUNTIME-NOTICE.txt"), "See Dependency Licenses/README.txt and inventory.json for exact bundled package notices and unresolved native-runtime redistribution requirements.\n");
 writeFileSync(join(resources, "MAC-SUPPORT.md"), readFileSync(join(root, "docs/MAC-SUPPORT.md")));
+writeFileSync(join(resources, "MAC-SETUP.md"), readFileSync(join(root, "docs/MAC-SETUP.md")));
+for (const file of ["LICENSE", "NOTICE", "THIRD_PARTY_NOTICES.md"]) {
+  const content = readFileSync(join(root, file));
+  writeFileSync(join(resources, file), content);
+  writeFileSync(join(layout, file), content);
+}
 const identity = values.identity ?? "-";
 const signing = ["--force", "--sign", identity, "--options", "runtime", ...(values.identity ? ["--timestamp"] : [])];
 run(["/usr/bin/codesign", ...signing, "--entitlements", "packaging/macos/runtime.entitlements.plist", runtime]);
@@ -76,7 +82,8 @@ run(["/usr/bin/codesign", ...signing, app]);
 run(["/usr/bin/codesign", "--verify", "--deep", "--strict", app]);
 run(["/usr/bin/plutil", "-lint", join(app, "Contents/Info.plist")]);
 symlinkSync("/Applications", join(layout, "Applications"));
-writeFileSync(join(layout, "Read Me.txt"), `${name}\nDrag the app to Applications, then open it. No Bun, Node or repository checkout is needed.\nBusiness data stays in your Application Support/${name} folder. Quitting locks the vault and stops local routines.\n${values.qualification ? "UNPUBLISHED LOCAL QUALIFICATION BUILD. Ad-hoc signed only; not Developer ID signed, notarized, or approved for customer installation. Do not bypass Gatekeeper warnings.\n" : "Verify release acceptance, signature, notarization and the published checksum before customer distribution.\n"}Your own AI account is required. Corestrum does not fund AI usage.\n`);
+writeFileSync(join(layout, "Read Me.txt"), `${name}\nDrag the app to Applications, then open it. No Bun, Node or repository checkout is needed.\nBusiness data stays in your Application Support/${name} folder. Quitting locks the vault and stops local routines.\n${values.qualification ? "UNPUBLISHED LOCAL QUALIFICATION BUILD. Ad-hoc signed only; not Developer ID signed, notarized, or approved for customer installation. Do not bypass Gatekeeper warnings.\n" : "Verify release acceptance, signature, notarization and the published checksum before customer distribution.\n"}See Setup Instructions.md for first-use guidance. Your own AI account is required. Corestrum does not fund AI usage.\n`);
+writeFileSync(join(layout, "Setup Instructions.md"), readFileSync(join(root, "docs/MAC-SETUP.md")));
 const dmg = join(output, `Corestrum-${values.qualification ? "preview-" : ""}${arch}.dmg`);
 run(["/usr/bin/hdiutil", "create", "-volname", name, "-srcfolder", layout, "-format", "UDZO", dmg]);
 const sha256 = (file: string) => createHash("sha256").update(readFileSync(file)).digest("hex");
