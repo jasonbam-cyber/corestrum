@@ -4,6 +4,10 @@
 
 Corestrum is an **Apache 2.0 source preview**. The community app has no Corestrum subscription, paid activation or licensing-server dependency. AI usage and any infrastructure you choose to run are billed by your own providers.
 
+![Corestrum glass workspace with fictional qualification data](docs/images/workspace-glass.png)
+
+*Interface preview with clearly labeled fictional activity. Dark and light appearances, keyboard access and reduced motion are supported. [Explore the interface](docs/INTERFACE.md).*
+
 ## What you can do
 
 - Work with six AI roles: **Operations Lead, Support, Marketing, Bookkeeping, Legal and Compliance**. Each has a guided lesson and a practice prompt.

@@ -1,0 +1,112 @@
+/* The guide shares the workspace glass tokens, with its own calm reading rhythm. */
+.agent-guide {
+  display: grid;
+  grid-template-columns: minmax(230px, 0.75fr) minmax(0, 2fr);
+  gap: 24px;
+  align-items: start;
+  max-width: none;
+}
+.agent-guide .guide-journey {
+  padding: 26px 16px 18px;
+  border-radius: 24px;
+  position: sticky;
+  top: 24px;
+  overflow: hidden;
+}
+.agent-guide .guide-journey-heading { padding: 0 12px 12px; }
+.agent-guide .guide-journey-heading .eyebrow { font-size: 9px; margin-bottom: 15px; }
+.agent-guide .guide-journey-heading h2 { font-size: clamp(24px, 2.3vw, 31px); line-height: 1.16; margin-bottom: 12px; }
+.agent-guide .guide-journey-heading p { font-size: 12px; line-height: 1.75; margin-bottom: 18px; }
+.agent-guide .guide-steps { display: flex; flex-direction: column; gap: 7px; margin: 0; }
+.agent-guide .guide-steps button {
+  width: 100%;
+  justify-content: flex-start;
+  gap: 11px;
+  min-height: 66px;
+  padding: 12px;
+  border: 1px solid transparent;
+  border-radius: 15px;
+  background: transparent;
+  color: var(--muted);
+  text-align: left;
+}
+.agent-guide .guide-steps button[aria-current="step"] {
+  background: color-mix(in srgb, var(--lime) 16%, transparent);
+  border-color: color-mix(in srgb, var(--lime) 30%, transparent);
+  color: var(--ink);
+  box-shadow: inset 0 1px 0 color-mix(in srgb, var(--lime) 12%, transparent);
+}
+.agent-guide .guide-step-symbol { width: 30px; height: 30px; display: grid; place-items: center; flex: 0 0 auto; }
+.agent-guide .guide-step-copy { display: grid; gap: 5px; flex: 1; }
+.agent-guide .guide-step-copy strong { font-size: 12px; font-weight: 580; }
+.agent-guide .guide-step-copy small { font-size: 10px; color: var(--muted); line-height: 1.4; }
+.agent-guide .guide-step-number { font-size: 10px; opacity: 0.65; font-variant-numeric: tabular-nums; }
+.agent-guide .guide-boundary { display: flex; align-items: flex-start; gap: 10px; margin: 24px 12px 0; padding-top: 20px; border-top: 1px solid var(--line); color: var(--muted); }
+.agent-guide .guide-boundary p { font-size: 11px; font-weight: 550; margin: 0; line-height: 1.7; }
+.agent-guide .guide-boundary span { font-weight: 400; }
+.agent-guide .guide-lesson-wrap { min-width: 0; }
+.agent-guide .guide-lesson { padding: clamp(22px, 3.4vw, 42px); border-radius: 26px; }
+.agent-guide .guide-lesson-top { display: flex; align-items: center; gap: 14px; margin-bottom: 25px; }
+.agent-guide .guide-lesson-symbol {
+  display: grid;
+  place-items: center;
+  width: 52px;
+  height: 52px;
+  border-radius: 17px;
+  border: 1px solid color-mix(in srgb, var(--lime) 27%, transparent);
+  background: linear-gradient(145deg, color-mix(in srgb, var(--lime) 18%, transparent), color-mix(in srgb, var(--lime) 4%, transparent));
+  box-shadow: inset 0 1px 0 color-mix(in srgb, var(--lime) 16%, transparent), 0 8px 20px #0000000a;
+}
+.agent-guide .guide-lesson-top .eyebrow { margin: 0; font-size: 9px; }
+.agent-guide .guide-position { display: flex; gap: 5px; margin-left: auto; }
+.agent-guide .guide-position span { width: 5px; height: 5px; border-radius: 99px; background: var(--line); }
+.agent-guide .guide-position .current { width: 20px; background: var(--ink); }
+.agent-guide .guide-lesson h2 { font-size: clamp(26px, 3vw, 36px); letter-spacing: -0.04em; margin: 0 0 18px; }
+.agent-guide .guide-lesson > p { font-size: 13px; line-height: 1.85; }
+.agent-guide .guide-role-picker { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 9px; margin: 25px 0 20px; }
+.agent-guide .guide-role-option { justify-content: flex-start; min-width: 0; padding: 11px 13px; border-color: var(--line); border-radius: 13px; background: color-mix(in srgb, var(--paper) 35%, transparent); font-size: 11px; text-align: left; }
+.agent-guide .guide-role-option > svg { margin-left: auto; }
+.agent-guide .guide-role-option[aria-pressed="true"] { background: color-mix(in srgb, var(--lime) 15%, transparent); border-color: color-mix(in srgb, var(--lime) 40%, var(--line)); color: var(--ink); }
+.agent-guide .guide-role-initials { width: 28px; height: 28px; flex: 0 0 auto; display: grid; place-items: center; border-radius: 8px; background: color-mix(in srgb, var(--ink) 6%, transparent); font-size: 9px; letter-spacing: 0.6px; }
+.agent-guide .guide-role { padding: 24px; margin-bottom: 23px; background: color-mix(in srgb, var(--paper) 32%, transparent); border: 1px solid var(--line); border-radius: 18px; }
+.agent-guide .guide-role-heading { display: flex; align-items: center; gap: 14px; margin-bottom: 20px; }
+.agent-guide .guide-role-heading .eyebrow { margin: 0 0 6px; font-size: 8px; letter-spacing: 1.5px; }
+.agent-guide .guide-role-heading h3 { margin: 0; font-size: 18px; }
+.agent-guide .guide-role-orbit { width: 45px; height: 45px; flex: 0 0 auto; display: grid; place-items: center; border-radius: 50%; border: 1px solid var(--line); background: linear-gradient(145deg, color-mix(in srgb, var(--lime) 24%, transparent), transparent); box-shadow: inset 0 1px 0 #ffffff22; font-size: 12px; font-weight: 600; }
+.agent-guide .guide-role p, .agent-guide .guide-role dd { font-size: 12px; line-height: 1.8; }
+.agent-guide .guide-role dt { font-size: 11px; margin-top: 20px; }
+.agent-guide .guide-role dl { margin-bottom: 24px; }
+.agent-guide .guide-role dd { margin-bottom: 0; }
+.agent-guide .guide-role .outline { background: color-mix(in srgb, var(--paper) 32%, transparent); }
+.agent-guide .guide-lesson blockquote { border: 1px solid var(--line); border-left: 2px solid color-mix(in srgb, var(--lime) 60%, var(--ink)); border-radius: 0 15px 15px 0; background: color-mix(in srgb, var(--paper) 38%, transparent); font-size: 13px; padding: 22px 24px; }
+.agent-guide .guide-lesson li { font-size: 13px; line-height: 1.85; padding-left: 7px; }
+.agent-guide .guide-lesson li::marker { color: var(--muted); font-size: 11px; }
+.agent-guide .guide-pagination { margin-top: 32px; padding-top: 24px; gap: 12px; }
+.agent-guide .guide-pagination button, .agent-guide .guide-actions button { font-size: 12px; }
+@media (hover: hover) and (pointer: fine) {
+  .agent-guide .guide-steps button:hover:not([aria-current="step"]) { background: color-mix(in srgb, var(--paper) 35%, transparent); }
+  .agent-guide .guide-role-option:hover { transform: translateY(-2px); }
+}
+@media (max-width: 1100px) {
+  .agent-guide { grid-template-columns: 1fr; gap: 18px; }
+  .agent-guide .guide-journey { position: static; padding: 20px; }
+  .agent-guide .guide-journey-heading { display: none; }
+  .agent-guide .guide-steps { flex-direction: row; flex-wrap: wrap; gap: 6px; }
+  .agent-guide .guide-steps button { width: auto; flex: 1 1 130px; min-height: 54px; gap: 7px; padding: 9px; }
+  .agent-guide .guide-step-copy small, .agent-guide .guide-step-number { display: none; }
+  .agent-guide .guide-step-copy strong { font-size: 11px; }
+  .agent-guide .guide-boundary { display: none; }
+}
+@media (max-width: 560px) {
+  .agent-guide .guide-journey { padding: 12px; border-radius: 20px; }
+  .agent-guide .guide-steps button { flex-basis: 115px; }
+  .agent-guide .guide-role-picker { grid-template-columns: 1fr; }
+  .agent-guide .guide-lesson-top { gap: 10px; }
+  .agent-guide .guide-position { display: none; }
+  .agent-guide .guide-role { padding: 18px; }
+  .agent-guide .guide-lesson { padding: 22px; border-radius: 20px; }
+  .agent-guide .guide-pagination button { flex: 1 1 130px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .agent-guide .guide-role-option:hover { transform: none; }
+}

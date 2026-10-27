@@ -1,6 +1,8 @@
 import React, { useRef, useState } from "react";
-import { ArrowRight, ArrowLeft } from "lucide-react";
+import { ArrowRight, ArrowLeft, Users, FileText, MessageSquareText, ListChecks, Repeat2, ShieldCheck, ChevronRight } from "lucide-react";
 import { AGENTS, type AgentId } from "../catalog";
+import { Reveal } from "./motion";
+import "./agent-guide.css";
 
 const lessons: Record<AgentId, {
   useWhen: string;
@@ -47,6 +49,13 @@ const lessons: Record<AgentId, {
 };
 
 const steps = ["Meet your team", "Brief your team", "Try a request", "Review the result", "Set a routine"];
+const stepDetails = [
+  { icon: Users, detail: "Find the right specialist" },
+  { icon: FileText, detail: "Give your work context" },
+  { icon: MessageSquareText, detail: "Start with a practice prompt" },
+  { icon: ListChecks, detail: "Keep the decisions with you" },
+  { icon: Repeat2, detail: "Build a rhythm that works" },
+];
 type Destination = "Overview" | "Connections" | "Automations" | "Evidence";
 
 /** Training only. Navigating or preparing a prompt never runs AI or enables a routine. */
@@ -60,29 +69,42 @@ export function AgentGuide({ onNavigate, onPrepareDraft, hasDraft }: {
   const heading = useRef<HTMLHeadingElement>(null);
   const role = AGENTS.find((a) => a.id === agent)!;
   const lesson = lessons[agent];
+  const StepIcon = stepDetails[step].icon;
   const move = (next: number) => {
     setStep(next);
     requestAnimationFrame(() => heading.current?.focus());
   };
   return (
     <div className="agent-guide">
-      <nav aria-label="Agent guide steps" className="guide-steps">
-        {steps.map((title, i) => (
-          <button type="button" key={title} aria-current={i === step ? "step" : undefined} onClick={() => move(i)}>
-            <span aria-hidden="true">{i + 1}</span>{title}
-          </button>
-        ))}
-      </nav>
-      <section className="panel guide-lesson" aria-labelledby="guide-heading">
-        <span className="eyebrow">STEP {step + 1} OF {steps.length}</span>
+      <div className="guide-journey glass-card">
+        <div className="guide-journey-heading">
+          <span className="eyebrow">A LITTLE GUIDANCE</span>
+          <h2>Your first<br />good workflow.</h2>
+          <p>Get to know your team, shape a request and make the result your own.</p>
+        </div>
+        <nav aria-label="Agent guide steps" className="guide-steps">
+          {steps.map((title, i) => {
+            const Icon = stepDetails[i].icon;
+            return <button type="button" key={title} aria-current={i === step ? "step" : undefined} onClick={() => move(i)}>
+              <span className="guide-step-symbol" aria-hidden="true"><Icon size={18} /></span>
+              <span className="guide-step-copy"><strong>{title}</strong><small>{stepDetails[i].detail}</small></span>
+              <span className="guide-step-number" aria-hidden="true">0{i + 1}</span>
+            </button>;
+          })}
+        </nav>
+        <div className="guide-boundary"><ShieldCheck size={18} aria-hidden="true" /><p>You stay in control.<br /><span>Explore freely. Nothing runs just from reading this guide.</span></p></div>
+      </div>
+      <Reveal className="guide-lesson-wrap" delay={60}>
+      <section className="panel guide-lesson glass-card" aria-labelledby="guide-heading">
+        <div className="guide-lesson-top"><span className="guide-lesson-symbol"><StepIcon size={24} aria-hidden="true" /></span><span className="eyebrow">STEP {step + 1} OF {steps.length}</span><div className="guide-position" aria-hidden="true">{steps.map((title, i) => <span key={title} className={i === step ? "current" : ""} />)}</div></div>
         <h2 id="guide-heading" ref={heading} tabIndex={-1}>{steps[step]}</h2>
         {step === 0 ? <>
           <p>Start with Operations Lead for a business-wide question, or choose a specialist for a focused task. These six roles share the business brief you save for this workspace.</p>
           <div className="guide-role-picker" role="group" aria-label="Explore an agent">
-            {AGENTS.map((a) => <button type="button" className="outline" key={a.id} aria-pressed={agent === a.id} onClick={() => setAgent(a.id)}>{a.name}</button>)}
+            {AGENTS.map((a) => <button type="button" className="outline guide-role-option" key={a.id} aria-pressed={agent === a.id} onClick={() => setAgent(a.id)}><span className="guide-role-initials" aria-hidden="true">{a.initials}</span><span>{a.name}</span><ChevronRight size={14} aria-hidden="true" /></button>)}
           </div>
           <article className="guide-role" aria-live="polite" aria-atomic="true">
-            <h3>{role.name}</h3>
+            <div className="guide-role-heading"><span className="guide-role-orbit" aria-hidden="true">{role.initials}</span><div><span className="eyebrow">YOUR SPECIALIST</span><h3>{role.name}</h3></div></div>
             <p>{lesson.useWhen}</p>
             <dl>
               <dt>What to expect</dt><dd>{lesson.review}</dd>
@@ -150,6 +172,7 @@ export function AgentGuide({ onNavigate, onPrepareDraft, hasDraft }: {
           {step < steps.length - 1 ? <button type="button" className="dark" onClick={() => move(step + 1)}>Next: {steps[step + 1]}<ArrowRight size={16} /></button> : <button type="button" className="outline" onClick={() => move(0)}>Review the guide again</button>}
         </div>
       </section>
+      </Reveal>
     </div>
   );
 }
