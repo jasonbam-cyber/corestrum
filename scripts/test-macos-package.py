@@ -154,6 +154,14 @@ try:
         for p in notice_manifest["packages"] for f in p["files"]))
     check("font and server dependency notices included", {"@fontsource-variable/inter", "jose"}.issubset({p["name"] for p in notice_manifest["packages"]}))
     check("Mac support matrix ships with app", (app / "Contents/Resources/MAC-SUPPORT.md").is_file())
+    check("setup guide survives copying the app", digest(app / "Contents/Resources/MAC-SETUP.md") == digest(root / "docs/MAC-SETUP.md"))
+    check("disk image includes exact setup guide", digest(mount / "Setup Instructions.md") == digest(root / "docs/MAC-SETUP.md"))
+    check("copied app retains project license and notices", all(
+        digest(app / "Contents/Resources" / name) == digest(root / name)
+        for name in ("LICENSE", "NOTICE", "THIRD_PARTY_NOTICES.md")))
+    check("disk image includes project license and notices", all(
+        digest(mount / name) == digest(root / name)
+        for name in ("LICENSE", "NOTICE", "THIRD_PARTY_NOTICES.md")))
     run(["/usr/bin/hdiutil", "detach", str(mount)])
     mounted = False
     cache = args.output / "swift-cache"

@@ -18,6 +18,8 @@ Build from a clean checkout on macOS. Use an untracked release configuration con
 
 Run the copied-DMG process checks with `python3 scripts/test-macos-package.py --package-evidence /absolute/output/package-evidence.json --output /absolute/new-test-output`. These checks use fictional workspaces and no provider credentials. Passing on the builder Mac is not independent Gatekeeper acceptance.
 
+The app and disk image retain the project's Apache 2.0 `LICENSE`, `NOTICE` and `THIRD_PARTY_NOTICES.md`; the setup guide remains inside the copied app after the disk image is ejected. These project notices do not resolve the separate native-runtime redistribution gate.
+
 ## Notarize the app and final disk image
 
 Use the reviewed package paths below in place of placeholders; do not submit an ad-hoc preview.

@@ -70,6 +70,11 @@ const noticeEvidence = writeDesktopNotices(root, join(resources, "Dependency Lic
 writeFileSync(join(resources, "RUNTIME-NOTICE.txt"), "See Dependency Licenses/README.txt and inventory.json for exact bundled package notices and unresolved native-runtime redistribution requirements.\n");
 writeFileSync(join(resources, "MAC-SUPPORT.md"), readFileSync(join(root, "docs/MAC-SUPPORT.md")));
 writeFileSync(join(resources, "MAC-SETUP.md"), readFileSync(join(root, "docs/MAC-SETUP.md")));
+for (const file of ["LICENSE", "NOTICE", "THIRD_PARTY_NOTICES.md"]) {
+  const content = readFileSync(join(root, file));
+  writeFileSync(join(resources, file), content);
+  writeFileSync(join(layout, file), content);
+}
 const identity = values.identity ?? "-";
 const signing = ["--force", "--sign", identity, "--options", "runtime", ...(values.identity ? ["--timestamp"] : [])];
 run(["/usr/bin/codesign", ...signing, "--entitlements", "packaging/macos/runtime.entitlements.plist", runtime]);
