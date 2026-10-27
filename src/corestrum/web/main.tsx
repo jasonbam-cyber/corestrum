@@ -43,11 +43,17 @@ import {
   Menu,
   X,
   BookOpen,
+  Sun,
+  Moon,
+  Sparkles,
 } from "lucide-react";
 import "@fontsource-variable/inter";
 import { AGENTS, PLANS, TEMPLATES, type Plan, type AgentId } from "../catalog";
 import { AgentGuide } from "./AgentGuide";
 import "./styles.css";
+import "./glass.css";
+import { Reveal, usePageMotion, useInputModality } from "./motion";
+import { WorkspaceInsights } from "./WorkspaceInsights";
 type Config = {
   mode: "cloud" | "local";
   edition?: "community" | "licensed";
@@ -165,7 +171,18 @@ function Notice({
     </div>
   );
 }
+function ThemeButton() {
+  const [theme, setTheme] = useState(() => {
+    try { return localStorage.getItem("corestrum-appearance") === "light" ? "light" : "dark"; } catch { return "dark"; }
+  });
+  useEffect(() => { document.documentElement.dataset.theme = theme; }, [theme]);
+  return <button className="theme-toggle" aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} appearance`} title={`Switch to ${theme === "dark" ? "light" : "dark"} appearance`} onClick={() => {
+    const next = theme === "dark" ? "light" : "dark"; setTheme(next);
+    try { localStorage.setItem("corestrum-appearance", next); } catch { /* Appearance is optional. */ }
+  }}>{theme === "dark" ? <Sun size={17} /> : <Moon size={17} />}</button>;
+}
 function App() {
+  useInputModality();
   const [config, setConfig] = useState<Config | null>(null),
     [error, setError] = useState("");
   useEffect(() => {
@@ -203,7 +220,17 @@ function App() {
   );
 }
 function CommunityWelcome() {
-  return <div className="site"><header><Brand /><a className="button dark" href="https://github.com/jasonbam-cyber/corestrum">View on GitHub <ArrowUpRight size={16} /></a></header><main className="account-area"><div className="eyebrow">FREE · OPEN SOURCE · APACHE 2.0</div><h1>An operations team for your SaaS.</h1><p>Six AI roles help you turn business context into reviewable reports, draft responses and paused routines. Run Corestrum locally and connect your own AI.</p><section className="panel"><h2>Start with your own workspace</h2><p>No Corestrum subscription, activation server or purchase is required. Your AI provider and hosting costs remain yours.</p><a className="button dark" href="https://github.com/jasonbam-cyber/corestrum#quickstart">Read the quickstart <ArrowRight size={16} /></a></section><section className="panel"><h2>Your team</h2>{AGENTS.map(a => <article key={a.id}><h3>{a.name}</h3><p>{a.description}</p></article>)}</section><Notice>Source preview. Encryption, access controls and evidence tools support security work; they do not confer SOC 2 attestation. Agents draft for your review. Hosted infrastructure and optional connectors require your own setup and qualification.</Notice></main></div>;
+  return <div className="site community-site">
+    <header><Brand /><nav><a href="#community-team">The team</a><a href="#community-control">Your workspace</a></nav><div className="button-row"><ThemeButton /><a className="button outline" href="https://github.com/jasonbam-cyber/corestrum">View on GitHub <ArrowUpRight size={16} /></a></div></header>
+    <main>
+      <section className="community-hero">
+        <Reveal><span className="eyebrow"><span className="status-dot" /> FREE. OPEN SOURCE. YOURS.</span><h1>Your business.<br /><em>In concert.</em></h1><p>Six specialist AI roles. One calm place to think, plan and move your SaaS forward. Bring your context. Connect your AI. Make the next move yours.</p><a className="button dark" href="https://github.com/jasonbam-cyber/corestrum#quickstart">Set up your workspace <ArrowRight size={17} /></a><span className="community-license">Apache 2.0 · No Corestrum subscription</span></Reveal>
+        <Reveal className="community-orchestra glass-card" delay={80}><span className="eyebrow">A SMALL TEAM. A BIGGER PICTURE.</span><div className="orchestra-center"><Mark /><h2>Clarity starts here.</h2><p>Your context becomes reviewable work.</p></div><div className="orchestra-roles">{AGENTS.map((a, i) => <div key={a.id}><span className={`role-dot role-color-${i}`} />{a.name}<ChevronRight size={14} /></div>)}</div><span className="orchestra-footer"><ShieldCheck size={15} />You review. You decide.</span></Reveal>
+      </section>
+      <section className="section" id="community-team"><div className="section-head"><div><span className="eyebrow">SPECIALISTS, WORKING TOGETHER</span><h2>A role for every angle.</h2></div><p>Practical perspectives for the decisions ahead. Every response is a draft for your review.</p></div><div className="agent-grid">{AGENTS.map((a, i) => <Reveal className="agent-card glass-card" key={a.id} delay={(i % 3) * 40}><span className={`avatar role-color-${i}`}>{a.initials}</span><h3>{a.name}</h3><p>{a.description}</p><div className="tags">{a.specialties.map(t => <span key={t}>{t}</span>)}</div></Reveal>)}</div></section>
+      <section className="section community-control" id="community-control"><Reveal className="glass-card"><LockKeyhole size={28} /><h2>A workspace that stays yours.</h2><p>Your brief, reports and routines live locally. Connect your own AI account; your provider and hosting costs remain yours. Routines start paused, ready for your review.</p><a className="button outline" href="https://github.com/jasonbam-cyber/corestrum#quickstart">Read the quickstart <ArrowUpRight size={16} /></a></Reveal><Reveal className="glass-card" delay={60}><ShieldCheck size={28} /><h2>Clear boundaries. Real ownership.</h2><p>No Corestrum subscription, activation server or purchase is required. Optional connectors use your own infrastructure and need their own setup and qualification.</p><Notice>Source preview. Security controls and evidence tools do not confer SOC 2 attestation.</Notice></Reveal></section>
+    </main><footer><Brand /><span>Free, local-first operations for SaaS founders.</span><a href="https://github.com/jasonbam-cyber/corestrum">Apache 2.0 <ArrowUpRight size={12} /></a></footer>
+  </div>;
 }
 function Cloud({ config }: { config: Config }) {
   const [page, setPage] = useState(
@@ -215,7 +242,7 @@ function Cloud({ config }: { config: Config }) {
   return (
     <div className="site">
       <header>
-        <Brand />
+        <Brand /><ThemeButton />
         <nav>
           <a href="#how">How it works</a>
           <a href="#team">Your team</a>
@@ -380,11 +407,11 @@ function Cloud({ config }: { config: Config }) {
               </p>
             </div>
             <div className="agent-grid">
-              {AGENTS.map((a) => (
+              {AGENTS.map((a, i) => (
                 <article className="agent-card" key={a.id}>
                   <span
                     className={
-                      "avatar " + (a.id === "operations" ? "green" : "")
+                      `avatar role-color-${i}`
                     }
                   >
                     {a.initials}
@@ -706,6 +733,7 @@ function LocalApp({ config }: { config: Config }) {
     [backupArchive, setBackupArchive] = useState(""),
     [backupFilename, setBackupFilename] = useState(""),
     [restoreConfirmed, setRestoreConfirmed] = useState(false);
+  const mainRef = React.useRef<HTMLElement>(null);
   const backupFileInput = React.useRef<HTMLInputElement>(null);
   const csrf = React.useRef("");
   const contextDirty = React.useRef(false);
@@ -787,8 +815,14 @@ function LocalApp({ config }: { config: Config }) {
     void act(fn);
   };
   const ready = state?.unlocked && state?.license;
+  usePageMotion(mainRef, `${page}:${Boolean(ready)}:${Boolean(state?.unlocked)}`);
+  useEffect(() => {
+    window.scrollTo(0, 0);
+    if (document.documentElement.dataset.input === "keyboard") mainRef.current?.focus({ preventScroll: true });
+  }, [page]);
   return (
     <div className="workspace">
+      <a className="skip-link" href="#workspace-main">Skip to workspace</a>
       <aside id="workspace-navigation" className={menu ? "expanded" : ""}>
         <Brand />
         <div className="workspace-name">
@@ -798,11 +832,14 @@ function LocalApp({ config }: { config: Config }) {
           </span>
           <ChevronDown size={14} />
         </div>
-        <nav>
+        <span className="nav-caption">YOUR WORKSPACE</span>
+        <nav aria-label="Workspace pages">
+          <span className="nav-selection" aria-hidden="true" style={{ transform: `translateY(${Math.max(0, nav.findIndex(n => n.id === page)) * 54}px)` }} />
           {nav.map((n) => (
             <button
               key={n.id}
               className={page === n.id ? "selected" : ""}
+              aria-current={page === n.id ? "page" : undefined}
               onClick={() => {
                 setPage(n.id);
                 setMenu(false);
@@ -856,13 +893,14 @@ function LocalApp({ config }: { config: Config }) {
             Workspace <ChevronRight size={13} /> {page}
           </span>
           <div>
+            <ThemeButton />
             <span className="tiny-pill">
               {config.environment === "staging" ? "STAGING" : "LOCAL"}
             </span>
             <span className="owner-avatar">You</span>
           </div>
         </header>
-        <main>
+        <main ref={mainRef} id="workspace-main" tabIndex={-1}>
           {error ? <Notice error>{error}</Notice> : null}
           {notice ? <Notice>{notice}</Notice> : null}
           {!state ? (
@@ -996,7 +1034,7 @@ function LocalApp({ config }: { config: Config }) {
             </div>
           ) : (
             <>
-              <div className="page-title">
+              <div className="page-title"><span className="page-orbit" aria-hidden="true"><Sparkles size={24} /></span>
                 <div>
                   <span className="eyebrow">
                     {page === "Overview"
@@ -1031,6 +1069,10 @@ function LocalApp({ config }: { config: Config }) {
                   </p>
                 </div>
               </div>
+              {page === "Overview" || page === "Evidence" ? <WorkspaceInsights
+                reports={state.operations?.reports} routines={state.operations?.automations}
+                ledgerIntact={state.operations?.ledgerIntact} onNavigate={setPage} compact={page === "Evidence"}
+              /> : null}
               {page === "Getting started" ? (
                 <AgentGuide
                   hasDraft={Boolean(prompt.trim())}
@@ -1339,11 +1381,11 @@ function LocalApp({ config }: { config: Config }) {
               ) : null}
               {page === "Team" ? (
                 <div className="agent-grid">
-                  {AGENTS.map((a) => (
+                  {AGENTS.map((a, i) => (
                     <article className="agent-card" key={a.id}>
                       <span
                         className={
-                          "avatar " + (a.id === "operations" ? "green" : "")
+                          `avatar role-color-${i}`
                         }
                       >
                         {a.initials}
